@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sg220_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - sg220_net
+    # Para acessar o switch real, o container precisa estar
+    # na mesma rede que o SG220-26 (ou roteamento adequado).
+    # Descomente para usar a rede do host diretamente:
+    # network_mode: host
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sg220_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - sg220_net
+
+networks:
+  sg220_net:
+    driver: bridge
